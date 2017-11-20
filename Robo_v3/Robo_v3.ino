@@ -78,9 +78,7 @@ void controlRobot() {
 
 void readUltrassom() {
   digitalWrite(trigger, LOW);
-  delayMicroseconds(5);
   digitalWrite(trigger, HIGH);
-  delayMicroseconds(15);
   digitalWrite(trigger, LOW);
   howfar = pulseIn(echo, HIGH);
   howfar = howfar * 0.01657;
