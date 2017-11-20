@@ -29,7 +29,7 @@ int valueSensor1 = 0;
 
 void setup() {
   Serial.begin(3500);
-  onInitit();
+  onInit();
   threadUltrassom.setInterval(50);
   threadUltrassom.onRun(readUltrassom);
   threadSensor.setInterval(50);
