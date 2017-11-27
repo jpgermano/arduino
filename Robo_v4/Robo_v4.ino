@@ -42,9 +42,9 @@ Ultrasonic ultrasonic(trigger, echo);
 void setup() {
   Serial.begin(5500);
   onInit();
-  threadMotor.setInterval(85);
+  threadMotor.setInterval(15);
   threadMotor.onRun(controlRobot);
-  threadSensor.setInterval(150);
+  threadSensor.setInterval(20);
   threadSensor.onRun(verifyLine);
 //  threadDebug.setInterval(300);
 //  threadDebug.onRun(doDebug);
