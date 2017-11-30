@@ -19,13 +19,13 @@ int DIR_ANTE_HORARIO = 7 ;
 int RODA_ESQUERDA = 3;
 
 //variavel auxiliar
-int speed = 0;
+int velocity = 0;
 
-int MAX = 300;
+int MAX = 240;
 int MED = 150;
-int MIN = 20;
+int MIN = 90;
 
-const int pinSensor = A1;
+const int pinSensor = A0;
 int valueSensor = 0;
 
 const int pinSensor1 = A1;
@@ -40,18 +40,19 @@ int cicle = 1;
 Ultrasonic ultrasonic(trigger, echo);
 
 void setup() {
-  Serial.begin(5500);
+  delay(4600);
+  Serial.begin(9600);
   onInit();
-  threadMotor.setInterval(15);
+  threadMotor.setInterval(50);
   threadMotor.onRun(controlRobot);
-  threadSensor.setInterval(20);
+  threadSensor.setInterval(50);
   threadSensor.onRun(verifyLine);
-//  threadDebug.setInterval(300);
-//  threadDebug.onRun(doDebug);
+  threadDebug.setInterval(1000);
+  threadDebug.onRun(doDebug);
 
   controller.add(&threadMotor);
   controller.add(&threadSensor);
-//  controller.add(&threadDebug);
+  controller.add(&threadDebug);
 }
 
 void onInit() {
@@ -69,11 +70,11 @@ void onInit() {
 }
 
 void controlRobot() {
-  if (ultrasonic.distanceRead() < 40 && line == false && ultrasonic.distanceRead() != 0) {
-    speed = MAX;
+  if (ultrasonic.distanceRead() < 40 && line == false && ultrasonic.distanceRead() >= 0) {
+    velocity = MAX;
     go();
   } else if (line == false && ultrasonic.distanceRead() != 0) {
-    speed = MIN;
+    velocity = MIN;
     turnRight();
   }
 }
@@ -82,8 +83,8 @@ void verifyLine() {
   valueSensor = analogRead(pinSensor);
   valueSensor1 = analogRead(pinSensor1);
   
-  if (valueSensor <= 150 || valueSensor1 <= 150) { 
-    speed = MED;
+  if (valueSensor <= 600 || valueSensor1 <= 600) { 
+    velocity = MED;
     backwards();
     line = true;
   } else{  
@@ -100,8 +101,8 @@ void go() {
   digitalWrite (DIR_ANTE_HORARIO, LOW);
   digitalWrite (ESQ_HORARIO, HIGH);
   digitalWrite (ESQ_ANTE_HORARIO, LOW);
-  analogWrite (RODA_ESQUERDA, speed);
-  analogWrite (RODA_DIREITA, speed);
+  analogWrite (RODA_ESQUERDA, velocity);
+  analogWrite (RODA_DIREITA, velocity);
 }
 
 void backwards() {
@@ -109,8 +110,8 @@ void backwards() {
   digitalWrite (DIR_ANTE_HORARIO, HIGH);
   digitalWrite (ESQ_HORARIO, LOW);
   digitalWrite (ESQ_ANTE_HORARIO, HIGH);
-  analogWrite (RODA_ESQUERDA, speed);
-  analogWrite (RODA_DIREITA, speed);
+  analogWrite (RODA_ESQUERDA, velocity);
+  analogWrite (RODA_DIREITA, velocity);
 }
 
 void turnLeft() {
@@ -118,8 +119,8 @@ void turnLeft() {
   digitalWrite (DIR_ANTE_HORARIO, HIGH);
   digitalWrite (ESQ_HORARIO, HIGH);
   digitalWrite (ESQ_ANTE_HORARIO, LOW);
-  analogWrite (RODA_ESQUERDA, speed);
-  analogWrite (RODA_DIREITA, speed);
+  analogWrite (RODA_ESQUERDA, velocity);
+  analogWrite (RODA_DIREITA, velocity);
 }
 
 void turnRight() {
@@ -127,8 +128,8 @@ void turnRight() {
   digitalWrite (DIR_ANTE_HORARIO, LOW);
   digitalWrite (ESQ_HORARIO, LOW);
   digitalWrite (ESQ_ANTE_HORARIO, HIGH);
-  analogWrite (RODA_ESQUERDA, speed);
-  analogWrite (RODA_DIREITA, speed);
+  analogWrite (RODA_ESQUERDA, velocity);
+  analogWrite (RODA_DIREITA, velocity);
 }
 
 void stopmove() {
@@ -136,8 +137,8 @@ void stopmove() {
   digitalWrite (DIR_ANTE_HORARIO, LOW);
   digitalWrite (ESQ_HORARIO, LOW);
   digitalWrite (ESQ_ANTE_HORARIO, LOW);
-  analogWrite (RODA_ESQUERDA, speed);
-  analogWrite (RODA_DIREITA, speed);
+  analogWrite (RODA_ESQUERDA, velocity);
+  analogWrite (RODA_DIREITA, velocity);
 }
 
 void doDebug() {
@@ -150,7 +151,7 @@ void doDebug() {
   Serial.println(valueSensor1);
 }
 /* Ativar ou desativar debug */
-bool ativo = false;
+bool ativo = true;
 void loop () {
   ativo ? threadDebug.enabled = true : threadDebug.enabled = false;
   controller.run();
